@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .dashboard-header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .dashboard-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .user-info h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .info-item {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .info-item strong {
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-logout:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.4);
+        }
+
+        .stats {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        @media (max-width: 600px) {
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn-logout {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>🎉 Dashboard</h1>
+            <p>Bem-vindo ao seu painel de controle!</p>
+        </div>
+
+        <div class="user-info">
+            <h2>👤 Informações do Usuário</h2>
+            <div class="info-item">
+                <strong>Nome:</strong> <span id="user-name">-</span>
+            </div>
+            <div class="info-item">
+                <strong>Email:</strong> <span id="user-email">-</span>
+            </div>
+            <div class="info-item">
+                <strong>Membro desde:</strong> <span id="user-date">-</span>
+            </div>
+            
+            <div class="actions">
+                <button class="btn btn-logout" id="logout-btn">🚪 Sair da Conta</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h3>📊 Estatísticas do Sistema</h3>
+            <div class="stat-item">
+                <strong>Total de usuários cadastrados:</strong> <span id="total-users">0</span>
+            </div>
+            <div class="stat-item">
+                <strong>Status:</strong> <span style="color: #28a745; font-weight: 600;">✅ Online</span>
+            </div>
+            <div class="stat-item">
+                <strong>Última atualização:</strong> <span id="last-update">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="src/auth.js"></script>
+    <script>
+        // Inicializar sistema de autenticação
+        const authSystem = new AuthSystem();
+
+        // Verificar se há usuário logado
+        const currentUserData = localStorage.getItem('currentUser');
+        
+        if (!currentUserData) {
+            // Se não estiver logado, redirecionar para login
+            alert('⚠️ Você precisa fazer login primeiro!');
+            window.location.href = 'index.html';
+        } else {
+            // Carregar informações do usuário
+            const user = JSON.parse(currentUserData);
+            
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-email').textContent = user.email;
+            
+            const createdDate = new Date(user.createdAt);
+            document.getElementById('user-date').textContent = createdDate.toLocaleDateString('pt-BR');
+            
+            // Estatísticas
+            document.getElementById('total-users').textContent = authSystem.listUsers().length;
+            document.getElementById('last-update').textContent = new Date().toLocaleString('pt-BR');
+        }
+
+        // Botão de logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja sair?')) {
+                authSystem.logout();
+                alert('✅ Logout realizado com sucesso!');
+                window.location.href = 'index.html';
+            }
+        });
+
+        console.log('📊 Dashboard carregado com sucesso!');
+    </script>
+</body>
+</html>
